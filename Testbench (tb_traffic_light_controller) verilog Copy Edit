@@ -1,0 +1,51 @@
+module tb_traffic_light_controller;
+    reg clk;
+    reg rst;
+    reg x;
+    wire [2:0] light1, light2, light3;
+
+    // Instantiate the traffic_light_controller module
+    traffic_light_controller uut (
+        .clk(clk),
+        .rst(rst),
+        .x(x),
+        .light1(light1),
+        .light2(light2),
+        .light3(light3)
+    );
+
+    // Clock generation
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;  // 10ns clock period
+    end
+
+    // Testbench stimulus
+    initial begin
+        rst = 1;
+        x = 0;
+        #10 rst = 0;
+
+        // Hold in State1
+        #20 x = 1;
+        #20 x = 1;
+        #20 x = 1;
+        #20 x = 1;
+        #20 x = 1;
+        #20 x = 1;
+
+        // Random toggling
+        #20 x = 1;
+        #20 x = 1;
+        #20 x = 0;
+        #20 x = 1;
+
+        #20 $finish;
+    end
+
+    // Monitor outputs
+    initial begin
+        $monitor("Time=%0t | rst=%b | x=%b | State=%b | light1=%b | light2=%b | light3=%b", 
+                 $time, rst, x, uut.State, light1, light2, light3);
+    end
+endmodule
